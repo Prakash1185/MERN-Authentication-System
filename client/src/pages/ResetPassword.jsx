@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { assets } from '../assets/assets'
 import { useNavigate } from 'react-router-dom'
 import { AppContext } from '../context/AppContext'
@@ -7,10 +7,10 @@ import { toast } from 'react-toastify'
 
 const ResetPassword = () => {
 
-  const { backendUrl } = useContext(AppContext)
+  const { backendUrl, isLoggedin, userData, getUserData } = useContext(AppContext)
+  const navigate = useNavigate()
   axios.defaults.withCredentials = true
 
-  const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [isEmailSent, setIsEmailSent] = useState('')
@@ -79,6 +79,10 @@ const ResetPassword = () => {
       toast.error(error.message)
     }
   }
+
+  useEffect(() => {
+    isLoggedin && userData && userData.isAccountVerified && navigate('/')
+  }, [isLoggedin, userData])
 
   return (
     <div className='flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-200  to-purple-400'>

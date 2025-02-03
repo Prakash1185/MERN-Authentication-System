@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { assets } from './../assets/assets';
 import { data, useNavigate } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
@@ -7,10 +7,9 @@ import { toast } from "react-toastify"
 
 const Login = () => {
 
+
+  const { backendUrl, setIsLoggedin, isLoggedin, userData, getUserData } = useContext(AppContext)
   const navigate = useNavigate()
-
-  const { backendUrl, setIsLoggedin, getUserData } = useContext(AppContext)
-
 
   const [state, setState] = useState("Sign Up")
   const [name, setName] = useState("")
@@ -53,6 +52,11 @@ const Login = () => {
       toast.error(error.message)
     }
   }
+
+
+  useEffect(() => {
+    isLoggedin && userData && userData.isAccountVerified && navigate('/')
+  }, [isLoggedin, userData])
 
   return (
     <div className='flex items-center justify-center min-h-screen px-6 sm:px-0 bg-gradient-to-br from-blue-200  to-purple-400'>
