@@ -1,45 +1,56 @@
 import React, { useContext, useState } from 'react'
 import { assets } from './../assets/assets';
-import { useNavigate } from 'react-router-dom';
+import { data, useNavigate } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
 import axios from "axios"
+import { toast } from "react-toastify"
 
 const Login = () => {
 
   const navigate = useNavigate()
 
-  const { backendUrl, setIsLoggedin } = useContext(AppContext)
+  const { backendUrl, setIsLoggedin, getUserData } = useContext(AppContext)
 
 
   const [state, setState] = useState("Sign Up")
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
-  const [passsword, setPassword] = useState("")
+  const [password, setPassword] = useState("")
 
   const onSubmitHandler = async (e) => {
     try {
       e.preventDefault()
       axios.defaults.withCredentials = true
 
-      if (state === "Sign up") {
+      if (state === "Sign Up") {
 
-        const data = await axios.post(`${backendUrl}/api/auth/register`, {
-          name, email, passsword
+        const { data } = await axios.post(`${backendUrl}/api/auth/register`, {
+          name, email, password
         })
 
         if (data.success) {
           setIsLoggedin(true)
+          getUserData()
           navigate('/')
         } else {
-          alert(data.message)
+          toast.error(data.message)
         }
 
-
       } else {
+        const { data } = await axios.post(`${backendUrl}/api/auth/login`, {
+          email, password
+        })
 
+        if (data.success) {
+          setIsLoggedin(true)
+          getUserData()
+          navigate('/')
+        } else {
+          toast.error(data.message)
+        }
       }
     } catch (error) {
-
+      toast.error(error.message)
     }
   }
 
@@ -85,13 +96,13 @@ const Login = () => {
               className='bg-transparent outline-none'
               required
               onChange={e => setPassword(e.target.value)}
-              value={passsword}
+              value={password}
             />
           </div>
 
           <p onClick={() => navigate('/reset-password')} className='mb-4 text-indigo-500 cursor-pointer'>Forgot password?</p>
 
-          <button className='w-full py-2.5 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-900 text-white font-medium'>{state}</button>
+          <button type='submit' className='w-full py-2.5 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-900 text-white font-medium'>{state}</button>
 
         </form>
 
